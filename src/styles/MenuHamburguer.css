@@ -1,0 +1,133 @@
+/* Base Styles */
+.app-container {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* Sidebar Styles */
+.custom-sidebar {
+  height: 100vh;
+  position: fixed;
+  z-index: 100;
+  background-color: #000; /* Fundo preto */
+  color: white;
+  transition: width 0.3s ease;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Força o fundo preto para a estrutura interna da sidebar */
+.custom-sidebar,
+.custom-sidebar .ps-sidebar-container,
+.custom-sidebar .ps-menu-root {
+  background-color: #000 !important;
+  color: white !important;
+}
+
+
+.ps-sidebar-container {
+  overflow: visible !important;
+}
+
+/* Toggle Button */
+.sidebar-toggle {
+  padding: 20px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.hamburger-button {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 4px;
+  transition: all 0.3s;
+}
+
+.hamburger-button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Menu Items */
+.ps-menu-button {
+  padding: 12px 15px !important;
+  margin: 5px 10px !important;
+  border-radius: 6px !important;
+  transition: all 0.3s !important;
+  color: #ecf0f1 !important;
+}
+
+.ps-menu-button:hover {
+  background-color: #34495e !important;
+  color: white !important;
+}
+
+.ps-menu-button.active {
+  background-color: #3498db !important;
+}
+
+.ps-menu-icon {
+  margin-right: 10px !important;
+}
+
+/* Collapsed State */
+.ps-collapsed .ps-menu-label {
+  display: none !important;
+}
+
+.ps-collapsed .ps-menu-button {
+  display: flex;
+  justify-content: center !important;
+  padding: 15px !important;
+}
+
+.ps-collapsed .ps-menu-icon {
+  font-size: 1.3rem !important;
+  margin-right: 0 !important;
+  color: #fff !important;
+}
+
+.ps-collapsed .ps-menu-button:hover {
+  background-color: #333 !important;
+}
+
+/* Main Content */
+.main-content {
+  margin-left: 250px;
+  padding: 20px;
+  width: calc(100% - 250px);
+  transition: margin-left 0.3s ease;
+  background-color: #f5f7fa;
+  min-height: 100vh;
+}
+
+.main-content.collapsed {
+  margin-left: 80px;
+  width: calc(100% - 80px);
+}
+
+/* Page Title */
+.page-title {
+  margin-top: 0;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #e0e0e0;
+  color: #2c3e50;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .main-content {
+    margin-left: 80px;
+    width: calc(100% - 80px);
+  }
+
+  .main-content.collapsed {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .ps-collapsed {
+    transform: translateX(-100%);
+  }
+}

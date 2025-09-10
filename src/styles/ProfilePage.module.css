@@ -1,0 +1,111 @@
+.pageContainer {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 30px;
+  box-sizing: border-box;
+}
+
+.welcomeText {
+  font-size: 34px;
+  font-weight: 700;
+  
+  margin-left: 20px;
+  margin-bottom: 30px;
+}
+
+.profileContainer {
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.profileForm {
+  background-color: #fff;
+  padding: 40px;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+}
+
+.profileForm h1 {
+  font-size: 26px;
+  color: #1e1e2f;
+  margin-bottom: 20px;
+}
+
+.profileForm h3 {
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.profileForm label {
+  display: block;
+  text-align: left;
+  margin-bottom: 6px;
+  font-weight: 600;
+  color: #555;
+}
+
+.profileInput {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 16px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.passwordField {
+  position: relative;
+}
+
+.eyeIcon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #555;
+  font-size: 16px;
+}
+
+.btnPrimary {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.3s ease;
+  margin-top: 5px;
+}
+
+.btnPrimary:hover {
+  opacity: 0.9;
+}
+
+.profileMessage {
+  color: #333;
+  margin-bottom: 15px;
+  font-size: 14px;
+}
+
+.errorMessage {
+  color: red;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+.successMessage {
+  color: green;
+  font-size: 14px;
+  margin-bottom: 10px;
+}

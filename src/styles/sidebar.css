@@ -1,0 +1,10 @@
+/* styles/sidebar.css */
+.sidebar-header {
+    padding: 20px;
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+    background-color: #4F83F7 !important;
+    color: white;
+  }
+  

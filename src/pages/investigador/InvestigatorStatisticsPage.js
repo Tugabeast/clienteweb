@@ -76,6 +76,7 @@ const InvestigatorStatisticsPage = () => {
           autoSkip: false,
           maxRotation: 45,
           minRotation: 45,
+          font: { size: 14, weight: 'bold' },
         },
       },
     },

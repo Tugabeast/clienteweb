@@ -7,6 +7,10 @@ html, body {
   font-family: sans-serif;
 }
 
+h1{
+  text-align: center;
+}
+
 .container {
   display: flex;
   height: 100vh;
@@ -59,8 +63,14 @@ h1 {
   padding: 0.5rem 0;
 }
 
-.pieChart, .barChart {
+.barChart {
   width: 100%;
+  height: 100%;
+  max-height: 40vh;
+  margin-bottom: 2rem;
+}
+
+.pieChart{
   height: 100%;
   max-height: 40vh;
   margin-bottom: 2rem;

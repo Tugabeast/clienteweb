@@ -6,6 +6,11 @@ import styles from '../../styles/QuestionsManagementPage.module.css';
 const QuestionsManagementPage = () => {
   const [questions, setQuestions] = useState([]);
   const [studies, setStudies] = useState([]);
+
+  // ⬇️ NOVO: erros por modal
+  const [createError, setCreateError] = useState('');
+  const [editError, setEditError] = useState('');
+
   const [form, setForm] = useState({
     question: '',
     content: '',
@@ -25,6 +30,12 @@ const QuestionsManagementPage = () => {
     fetchStudies();
   }, []);
 
+  // ⬇️ NOVO: helper c/ timeout 3s
+  const flash = (setter, msg) => {
+    setter(msg);
+    setTimeout(() => setter(''), 3000);
+  };
+
   const fetchQuestions = () => {
     api.get(`/questions?username=${username}`)
       .then(res => setQuestions(res.data))
@@ -38,23 +49,49 @@ const QuestionsManagementPage = () => {
   };
 
   const handleCreate = () => {
-    api.post('/questions', form)
+    // ⬇️ NOVO: validação + erro no modal
+    const { question, content, inputType, studyId } = form;
+    if (!question.trim() || !content.trim() || !inputType || !studyId) {
+      return flash(setCreateError, 'Preencha todos os campos.');
+    }
+
+    api.post('/questions', { ...form, studyId: Number(studyId) || null })
       .then(() => {
         fetchQuestions();
         setShowCreateModal(false);
+        setCreateError('');
         resetForm();
       })
-      .catch(err => console.error(err));
+      .catch((err) => {
+        if (err.response?.status === 409) {
+          flash(setCreateError, 'Já existe uma pergunta com esse nome neste estudo.');
+        } else {
+          flash(setCreateError, 'Erro ao criar pergunta.');
+        }
+      });
   };
 
   const handleEdit = () => {
-    api.put(`/questions/${questionToEdit.id}`, form)
+    // ⬇️ NOVO: validação + erro no modal
+    const { question, content, inputType, studyId } = form;
+    if (!question.trim() || !content.trim() || !inputType || !studyId) {
+      return flash(setEditError, 'Preencha todos os campos.');
+    }
+
+    api.put(`/questions/${questionToEdit.id}`, { ...form, studyId: Number(studyId) || null })
       .then(() => {
         fetchQuestions();
         setShowEditModal(false);
+        setEditError('');
         resetForm();
       })
-      .catch(err => console.error(err));
+      .catch((err) => {
+        if (err.response?.status === 409) {
+          flash(setEditError, 'Já existe uma pergunta com esse nome neste estudo.');
+        } else {
+          flash(setEditError, 'Erro ao atualizar pergunta.');
+        }
+      });
   };
 
   const handleDelete = () => {
@@ -67,12 +104,7 @@ const QuestionsManagementPage = () => {
   };
 
   const resetForm = () => {
-    setForm({
-      question: '',
-      content: '',
-      inputType: 'radio',
-      studyId: '',
-    });
+    setForm({ question: '', content: '', inputType: 'radio', studyId: '' });
   };
 
   const totalPages = Math.ceil(questions.length / itemsPerPage);
@@ -86,7 +118,12 @@ const QuestionsManagementPage = () => {
       <MenuHamburguer />
       <div className={styles.pageContainer}>
         <h2>Gestão de Perguntas</h2>
-        <button className={styles.createBtn} onClick={() => setShowCreateModal(true)}>+ Nova Pergunta</button>
+        <button
+          className={styles.createBtn}
+          onClick={() => { setShowCreateModal(true); setCreateError(''); }}
+        >
+          + Nova Pergunta
+        </button>
 
         <table className={styles.questionTable}>
           <thead>
@@ -106,17 +143,28 @@ const QuestionsManagementPage = () => {
                 <td>{q.inputType}</td>
                 <td>{q.studyName}</td>
                 <td>
-                  <button className={styles.editBtn} onClick={() => {
-                    setQuestionToEdit(q);
-                    setForm({
-                      question: q.question,
-                      content: q.content,
-                      inputType: q.inputType,
-                      studyId: q.studyId,
-                    });
-                    setShowEditModal(true);
-                  }}>Editar</button>
-                  <button className={styles.deleteBtn} onClick={() => setQuestionToDelete(q.id)}>Apagar</button>
+                  <button
+                    className={styles.editBtn}
+                    onClick={() => {
+                      setQuestionToEdit(q);
+                      setForm({
+                        question: q.question,
+                        content: q.content,
+                        inputType: q.inputType,
+                        studyId: q.studyId,
+                      });
+                      setEditError('');
+                      setShowEditModal(true);
+                    }}
+                  >
+                    Editar
+                  </button>
+                  <button
+                    className={styles.deleteBtn}
+                    onClick={() => setQuestionToDelete(q.id)}
+                  >
+                    Apagar
+                  </button>
                 </td>
               </tr>
             ))}
@@ -139,7 +187,7 @@ const QuestionsManagementPage = () => {
           <div className={styles.modalOverlay}>
             <div className={styles.modal}>
               <h3>Confirmar eliminação</h3>
-              <p>Queres mesmo apagar esta pergunta?</p>
+              <p>Quer mesmo apagar esta pergunta?</p>
               <div className={styles.modalActions}>
                 <button className={styles.confirmBtn} onClick={handleDelete}>Confirmar</button>
                 <button className={styles.cancelBtn} onClick={() => setQuestionToDelete(null)}>Cancelar</button>
@@ -152,40 +200,61 @@ const QuestionsManagementPage = () => {
           <div className={styles.modalOverlay}>
             <div className={styles.modal}>
               <h3>Criar Nova Pergunta</h3>
-              <input
-                type="text"
-                placeholder="Pergunta"
-                value={form.question}
-                onChange={e => setForm({ ...form, question: e.target.value })}
-              />
-              <textarea
-                placeholder="Descrição / Contexto"
-                rows={3}
-                value={form.content}
-                onChange={e => setForm({ ...form, content: e.target.value })}
-              />
-              <select
-                value={form.inputType}
-                onChange={e => setForm({ ...form, inputType: e.target.value })}
-              >
-                <option value="radio">Escolha Única (radio)</option>
-                <option value="checkbox">Múltiplas Escolhas (checkbox)</option>
-              </select>
-              <select
-                value={form.studyId}
-                onChange={e => setForm({ ...form, studyId: e.target.value })}
-              >
-                <option value="">Selecione um estudo...</option>
-                {studies.map(s => (
-                  <option key={s.id} value={s.id}>{s.name}</option>
-                ))}
-              </select>
+
+              {/* ⬇️ NOVO: erro dentro do modal */}
+              {createError && <div className={styles.modalError}>{createError}</div>}
+
+              <div className={styles.modalForm}>
+                <label htmlFor="q-question">Pergunta</label>
+                <input
+                  id="q-question"
+                  type="text"
+                  placeholder="Pergunta"
+                  value={form.question}
+                  onChange={e => setForm({ ...form, question: e.target.value })}
+                  autoFocus
+                />
+
+                <label htmlFor="q-content">Descrição / Contexto</label>
+                <textarea
+                  id="q-content"
+                  placeholder="Descrição / Contexto"
+                  rows={3}
+                  value={form.content}
+                  onChange={e => setForm({ ...form, content: e.target.value })}
+                />
+
+                <label htmlFor="q-inputType">Tipo de Input</label>
+                <select
+                  id="q-inputType"
+                  value={form.inputType}
+                  onChange={e => setForm({ ...form, inputType: e.target.value })}
+                >
+                  <option value="radio">Escolha Única (radio)</option>
+                  <option value="checkbox">Múltiplas Escolhas (checkbox)</option>
+                </select>
+
+                <label htmlFor="q-study">Estudo</label>
+                <select
+                  id="q-study"
+                  value={form.studyId}
+                  onChange={e => setForm({ ...form, studyId: e.target.value })}
+                >
+                  <option value="" disabled>Selecione um estudo...</option>
+                  {studies.map(s => (
+                    <option key={s.id} value={s.id}>{s.name}</option>
+                  ))}
+                </select>
+              </div>
+
               <div className={styles.modalActions}>
                 <button className={styles.confirmBtn} onClick={handleCreate}>Criar</button>
-                <button className={styles.cancelBtn} onClick={() => {
-                  setShowCreateModal(false);
-                  resetForm();
-                }}>Cancelar</button>
+                <button
+                  className={styles.cancelBtn}
+                  onClick={() => { setShowCreateModal(false); setCreateError(''); resetForm(); }}
+                >
+                  Cancelar
+                </button>
               </div>
             </div>
           </div>
@@ -195,40 +264,60 @@ const QuestionsManagementPage = () => {
           <div className={styles.modalOverlay}>
             <div className={styles.modal}>
               <h3>Editar Pergunta</h3>
-              <input
-                type="text"
-                placeholder="Pergunta"
-                value={form.question}
-                onChange={e => setForm({ ...form, question: e.target.value })}
-              />
-              <textarea
-                placeholder="Descrição / Contexto"
-                rows={3}
-                value={form.content}
-                onChange={e => setForm({ ...form, content: e.target.value })}
-              />
-              <select
-                value={form.inputType}
-                onChange={e => setForm({ ...form, inputType: e.target.value })}
-              >
-                <option value="radio">Escolha Única (radio)</option>
-                <option value="checkbox">Múltiplas Escolhas (checkbox)</option>
-              </select>
-              <select
-                value={form.studyId}
-                onChange={e => setForm({ ...form, studyId: e.target.value })}
-              >
-                <option value="">Selecione um estudo...</option>
-                {studies.map(s => (
-                  <option key={s.id} value={s.id}>{s.name}</option>
-                ))}
-              </select>
+
+              {/* ⬇️ NOVO: erro dentro do modal */}
+              {editError && <div className={styles.modalError}>{editError}</div>}
+
+              <div className={styles.modalForm}>
+                <label htmlFor="e-question">Pergunta</label>
+                <input
+                  id="e-question"
+                  type="text"
+                  placeholder="Pergunta"
+                  value={form.question}
+                  onChange={e => setForm({ ...form, question: e.target.value })}
+                />
+
+                <label htmlFor="e-content">Descrição / Contexto</label>
+                <textarea
+                  id="e-content"
+                  placeholder="Descrição / Contexto"
+                  rows={3}
+                  value={form.content}
+                  onChange={e => setForm({ ...form, content: e.target.value })}
+                />
+
+                <label htmlFor="e-inputType">Tipo de Input</label>
+                <select
+                  id="e-inputType"
+                  value={form.inputType}
+                  onChange={e => setForm({ ...form, inputType: e.target.value })}
+                >
+                  <option value="radio">Escolha Única (radio)</option>
+                  <option value="checkbox">Múltiplas Escolhas (checkbox)</option>
+                </select>
+
+                <label htmlFor="e-study">Estudo</label>
+                <select
+                  id="e-study"
+                  value={form.studyId}
+                  onChange={e => setForm({ ...form, studyId: e.target.value })}
+                >
+                  <option value="" disabled>Selecione um estudo...</option>
+                  {studies.map(s => (
+                    <option key={s.id} value={s.id}>{s.name}</option>
+                  ))}
+                </select>
+              </div>
+
               <div className={styles.modalActions}>
                 <button className={styles.confirmBtn} onClick={handleEdit}>Atualizar</button>
-                <button className={styles.cancelBtn} onClick={() => {
-                  setShowEditModal(false);
-                  resetForm();
-                }}>Cancelar</button>
+                <button
+                  className={styles.cancelBtn}
+                  onClick={() => { setShowEditModal(false); setEditError(''); resetForm(); }}
+                >
+                  Cancelar
+                </button>
               </div>
             </div>
           </div>

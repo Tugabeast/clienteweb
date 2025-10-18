@@ -36,7 +36,7 @@ const UserProfilePage = () => {
       return;
     }
 
-    api.put('/profile/update-profile', {
+    api.put('/profile', {
       currentUsername,
       newUsername: newUsername || null,
       currentPassword,

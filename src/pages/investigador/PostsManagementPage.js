@@ -65,7 +65,7 @@ const PostsManagementPage = () => {
 
     setIsImporting(true);
     try {
-      await api.post('/posts/import', { posts: parsedPosts, studyId });
+      await api.post('/posts', { posts: parsedPosts, studyId });
       alert('Importação concluída com sucesso.');
       setSelectedFile(null);
       setParsedPosts([]);

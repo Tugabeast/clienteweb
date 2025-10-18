@@ -171,3 +171,27 @@ h2 {
   color: white;
   border-color: #007bff;
 }
+
+
+/* === bloco novo === */
+.modalForm {
+  display: flex;
+  flex-direction: column;
+}
+
+.modalForm label {
+  font-weight: bold;
+  margin-bottom: 4px;     /* espaço entre o label e o campo */
+  color: #333;
+}
+
+.modalError {
+  background: #ffe9e9;
+  color: #b00020;
+  border: 1px solid #ffbdbd;
+  border-radius: 6px;
+  padding: 8px 12px;
+  margin-bottom: 12px;
+  font-size: 14px;
+}
+

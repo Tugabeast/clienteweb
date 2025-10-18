@@ -184,3 +184,26 @@
   border-radius: 5px;
   cursor: pointer;
 }
+
+.importGroup { display: flex; gap: 8px; align-items: center; }
+
+.importBtn {
+  padding: 10px 16px;
+  background: #0d6efd;
+  color: #fff;
+  border: 0;
+  border-radius: 6px;
+  cursor: pointer;
+  min-width: 160px;
+}
+.importBtn:disabled { opacity: .75; cursor: not-allowed; }
+
+.cancelBtn {
+  padding: 10px 16px;
+  background: #6c757d;
+  color: #fff;
+  border: 0;
+  border-radius: 6px;
+  cursor: pointer;
+}
+

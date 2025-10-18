@@ -25,7 +25,7 @@ const AdminProfilePage = () => {
     e.preventDefault();
 
     if (!newUsername && !newPassword) {
-      setError('Tens de preencher pelo menos um campo.');
+      setError('Tem de preencher pelo menos um campo.');
       clearMessages();
       return;
     }
@@ -36,7 +36,7 @@ const AdminProfilePage = () => {
       return;
     }
 
-    api.put('/profile/update-profile', {
+    api.put('/profile', {
       currentUsername,
       newUsername: newUsername || null,
       currentPassword,

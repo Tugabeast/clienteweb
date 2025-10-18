@@ -107,6 +107,7 @@
 }
 
 .modal {
+  width: 20%;
   background-color: white;
   padding: 30px;
   border-radius: 12px;
@@ -155,4 +156,39 @@
   border: none;
   border-radius: 6px;
   cursor: pointer;
+}
+
+.selfInfo {
+  color: #333;
+  font-size: 14px;
+  margin-left: 8px;
+}
+
+/* Labels nos modais */
+.modalForm label {
+  font-weight: 600;
+  text-align: left;
+  display: block;
+  margin: 6px 0 4px;
+  color: #222;
+}
+
+
+
+.errorMessage {
+  color: red;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+
+.modalError {
+  background: #ffe6e6;
+  border: 1px solid #ffb3b3;
+  color: #8a1f1f;
+  padding: 10px 12px;
+  border-radius: 6px;
+  text-align: left;
+  margin-top: 10px;
+  margin-bottom: 10px;
 }

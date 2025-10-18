@@ -10,7 +10,7 @@
 }
 
 .errorMessage {
-  color: red;
+  color: #b22222;
   font-size: 14px;
   margin-bottom: 10px;
 }
@@ -97,12 +97,31 @@ h2 {
 }
 
 .actionsCell {
-  display: flex;
   align-items: center;
   justify-content: flex-start;
-  gap: 10px;
 }
 
+.statusActive {
+  display: inline-block;
+  padding: 4px 8px;
+  background-color: #e7f7ed;
+  color: #1e7e34;
+  border: 1px solid #c9eed7;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+.statusFinished {
+  display: inline-block;
+  padding: 4px 8px;
+  background-color: #fdecea;
+  color: #a71d2a;
+  border: 1px solid #f5c6cb;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+/* ---------- MODAL ---------- */
 .modalOverlay {
   position: fixed;
   top: 0;
@@ -122,21 +141,32 @@ h2 {
   border-radius: 12px;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
   width: 100%;
-  max-width: 400px;
+  max-width: 420px;
   display: flex;
   flex-direction: column;
 }
 
 .modal h3 {
-  margin-bottom: 20px;
+  margin-bottom: 16px;
   text-align: center;
+}
+
+/* Erro mostrado DENTRO do modal */
+.modalError {
+  background: #fdecea;
+  border: 1px solid #f5c6cb;
+  color: #8a1c20;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 0.95rem;
+  margin-bottom: 12px;
 }
 
 .modalForm {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  margin-top: 15px;
+  margin-top: 8px;
 }
 
 .modalForm input,
@@ -147,6 +177,10 @@ h2 {
   width: 100%;
   font-size: 14px;
   box-sizing: border-box;
+}
+
+.modalForm label {
+  font-weight: bold;
 }
 
 .modalActions {
@@ -182,6 +216,7 @@ h2 {
   background-color: #5a6268;
 }
 
+/* ---------- PAGINAÇÃO ---------- */
 .pagination {
   display: flex;
   justify-content: center;

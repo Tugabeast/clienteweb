@@ -1,8 +1,8 @@
 {
   "name": "appmestrado",
   "version": "0.1.0",
-  "proxy": "http://localhost:5000",
   "private": true,
+  "homepage": "http://193.137.84.23/gestao",
   "dependencies": {
     "axios": "^1.9.0",
     "bcrypt": "^5.0.1",

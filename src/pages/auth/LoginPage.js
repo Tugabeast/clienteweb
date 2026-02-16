@@ -22,14 +22,38 @@ function LoginPage() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    
+    // Limpar mensagens de erro anteriores
+    setMessage('');
+
     api
       .post('/auth/login', { email, password })
       .then((response) => {
+        // Desestruturar os dados recebidos da API
         const { token, type, userId, username } = response.data;
+
+        // 1. Atualizar o Contexto (memória da App)
         login(token, type, username, userId);
+
+        
+        // O api.js vai ler daqui para enviar nos pedidos seguintes
+        localStorage.setItem('token', token);
+        
+        // 3. Gravar restantes dados úteis
         localStorage.setItem('userId', userId);
         localStorage.setItem('username', username);
-        navigate('/home');
+        localStorage.setItem('userType', type);
+
+        
+        console.log('✅ Login sucesso. Token gravado:', token);
+
+        // 4. Redirecionar
+        if (type === 'investigator' || type === 'admin') {
+
+             navigate('/home'); 
+        } else {
+             navigate('/home');
+        }
       })
       .catch((err) => {
         console.error('Erro ao realizar login:', err);

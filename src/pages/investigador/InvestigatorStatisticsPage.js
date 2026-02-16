@@ -25,23 +25,27 @@ const InvestigatorStatisticsPage = () => {
       .catch(err => console.error('Erro ao buscar estatísticas gerais:', err));
   }, []);
 
+  // Lógica de pesquisa para scroll automático
   const searchedIndex = generalStats.findIndex(item =>
     item.anonymizedUser.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   useEffect(() => {
-    if (scrollRef.current && searchedIndex >= 0) {
+    if (scrollRef.current && searchedIndex >= 0 && searchTerm !== '') {
+      // 100 é a largura estimada da barra + margem
       const scrollTo = searchedIndex * 100 - scrollRef.current.clientWidth / 2 + 50;
       scrollRef.current.scrollTo({ left: scrollTo, behavior: 'smooth' });
     }
-  }, [searchedIndex]);
+  }, [searchedIndex, searchTerm]);
 
+  // --- DADOS DO GRÁFICO ---
   const barData = {
     labels: generalStats.map(item => item.anonymizedUser),
     datasets: [
       {
         label: 'Validadas',
         data: generalStats.map(item => item.validated),
+        // Mantém a lógica de destacar a cor se for o utilizador pesquisado
         backgroundColor: generalStats.map((_, index) =>
           index === searchedIndex ? '#0056b3' : '#36A2EB'
         ),
@@ -56,8 +60,9 @@ const InvestigatorStatisticsPage = () => {
     ],
   };
 
+  // --- OPÇÕES ATUALIZADAS PARA STACKED ---
   const chartOptions = {
-    indexAxis: 'x',
+    indexAxis: 'x', // Barras verticais
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
@@ -69,15 +74,29 @@ const InvestigatorStatisticsPage = () => {
           padding: 15,
         },
       },
+      // Tooltip unificado para mostrar ambos os valores ao passar o rato
+      tooltip: {
+        mode: 'index',
+        intersect: false,
+      },
     },
     scales: {
       x: {
+        stacked: true, // <--- ISTO EMPILHA AS BARRAS NO EIXO X
         ticks: {
           autoSkip: false,
           maxRotation: 45,
           minRotation: 45,
           font: { size: 14, weight: 'bold' },
         },
+      },
+      y: {
+        stacked: true, // <--- ISTO EMPILHA AS BARRAS NO EIXO Y (Soma os valores)
+        beginAtZero: true,
+        title: {
+            display: true,
+            text: 'Nº de Classificações'
+        }
       },
     },
   };
@@ -106,6 +125,7 @@ const InvestigatorStatisticsPage = () => {
           <div className={styles.chartScrollWrapper} ref={scrollRef}>
             <div
               className={styles.barChart}
+              // Largura dinâmica para permitir scroll horizontal se houver muitos users
               style={{ minWidth: `${Math.max(generalStats.length, 7) * 100}px` }}
             >
               <Bar data={barData} options={chartOptions} />

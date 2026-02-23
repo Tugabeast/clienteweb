@@ -25,10 +25,12 @@ const InvestigatorStatisticsPage = () => {
       .catch(err => console.error('Erro ao buscar estatísticas gerais:', err));
   }, []);
 
-  // Lógica de pesquisa para scroll automático
-  const searchedIndex = generalStats.findIndex(item =>
-    item.anonymizedUser.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  
+  // Só faz a procura se o searchTerm não estiver vazio.
+  // Caso contrário, define como -1 (nenhum selecionado).
+  const searchedIndex = searchTerm.trim() !== '' 
+    ? generalStats.findIndex(item => item.anonymizedUser.toLowerCase().includes(searchTerm.toLowerCase()))
+    : -1;
 
   useEffect(() => {
     if (scrollRef.current && searchedIndex >= 0 && searchTerm !== '') {
@@ -60,7 +62,6 @@ const InvestigatorStatisticsPage = () => {
     ],
   };
 
-  // --- OPÇÕES ATUALIZADAS PARA STACKED ---
   const chartOptions = {
     indexAxis: 'x', // Barras verticais
     responsive: true,
@@ -82,7 +83,7 @@ const InvestigatorStatisticsPage = () => {
     },
     scales: {
       x: {
-        stacked: true, // <--- ISTO EMPILHA AS BARRAS NO EIXO X
+        stacked: true, 
         ticks: {
           autoSkip: false,
           maxRotation: 45,
@@ -91,7 +92,7 @@ const InvestigatorStatisticsPage = () => {
         },
       },
       y: {
-        stacked: true, // <--- ISTO EMPILHA AS BARRAS NO EIXO Y (Soma os valores)
+        stacked: true, 
         beginAtZero: true,
         title: {
             display: true,

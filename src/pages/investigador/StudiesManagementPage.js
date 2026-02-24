@@ -32,6 +32,7 @@ const StudiesManagementPage = () => {
     name: '',
     obs: '',
     minClassificationsPerPost: '',
+    maxClassificationsPerUser: '', 
     validationAgreementPercent: '',
     finishedAt: ''
   });
@@ -87,7 +88,6 @@ const StudiesManagementPage = () => {
 
   const pad2 = (n) => String(n).padStart(2, '0');
 
-  // Agora com segundos
   const formatRemainingTime = (finishedAt) => {
     if (!finishedAt) return 'Ativo (sem data limite)';
     const end = new Date(finishedAt).getTime();
@@ -110,6 +110,7 @@ const StudiesManagementPage = () => {
       name: '',
       obs: '',
       minClassificationsPerPost: '',
+      maxClassificationsPerUser: '',
       validationAgreementPercent: '',
       finishedAt: ''
     });
@@ -117,33 +118,31 @@ const StudiesManagementPage = () => {
 
   // --------- Create ---------
   const handleCreateStudy = () => {
-    const { name, obs, minClassificationsPerPost, validationAgreementPercent } = form;
+    const { name, obs, minClassificationsPerPost, maxClassificationsPerUser, validationAgreementPercent } = form;
 
     if (
       !name.trim() ||
       !obs.trim() ||
       minClassificationsPerPost === '' ||
+      maxClassificationsPerUser === '' ||
       validationAgreementPercent === ''
     ) {
       return setTimedError(setCreateError, createErrTimer, 'Todos os campos são obrigatórios.');
     }
 
     const minCls = Number(minClassificationsPerPost);
+    const maxClsUser = Number(maxClassificationsPerUser); // Validar máximo
     const agree = Number(validationAgreementPercent);
 
     if (!Number.isFinite(minCls) || minCls <= 0) {
-      return setTimedError(
-        setCreateError,
-        createErrTimer,
-        'O mínimo de classificações por post deve ser um número positivo.'
-      );
+      return setTimedError(setCreateError, createErrTimer, 'O mínimo de classificações por post deve ser um número positivo.');
+    }
+    
+    if (!Number.isFinite(maxClsUser) || maxClsUser <= 0) {
+      return setTimedError(setCreateError, createErrTimer, 'O máximo de classificações por utilizador deve ser um número positivo.');
     }
     if (!Number.isFinite(agree) || agree < 0 || agree > 100) {
-      return setTimedError(
-        setCreateError,
-        createErrTimer,
-        'A percentagem de validação deve estar entre 0 e 100.'
-      );
+      return setTimedError(setCreateError, createErrTimer, 'A percentagem de validação deve estar entre 0 e 100.');
     }
 
     api
@@ -205,6 +204,7 @@ const StudiesManagementPage = () => {
       name: study.name || '',
       obs: study.obs || '',
       minClassificationsPerPost: study.minClassificationsPerPost ?? '',
+      maxClassificationsPerUser: study.maxClassificationsPerUser ?? '', 
       validationAgreementPercent: study.validationAgreementPercent ?? '',
       finishedAt: toLocalInput(study.finishedAt)
     });
@@ -212,13 +212,18 @@ const StudiesManagementPage = () => {
   };
 
   const handleEditStudy = () => {
+    const minCls = Number(form.minClassificationsPerPost);
+    const maxClsUser = Number(form.maxClassificationsPerUser);
     const agree = Number(form.validationAgreementPercent);
+
+    if (form.minClassificationsPerPost !== '' && (!Number.isFinite(minCls) || minCls <= 0)) {
+       return setTimedError(setEditError, editErrTimer, 'O mínimo de classificações por post deve ser um número positivo.');
+    }
+    if (form.maxClassificationsPerUser !== '' && (!Number.isFinite(maxClsUser) || maxClsUser <= 0)) {
+       return setTimedError(setEditError, editErrTimer, 'O máximo de classificações por utilizador deve ser um número positivo.');
+    }
     if (!Number.isFinite(agree) || agree < 0 || agree > 100) {
-      return setTimedError(
-        setEditError,
-        editErrTimer,
-        'A percentagem de validação deve estar entre 0 e 100.'
-      );
+      return setTimedError(setEditError, editErrTimer, 'A percentagem de validação deve estar entre 0 e 100.');
     }
 
     api
@@ -268,10 +273,10 @@ const StudiesManagementPage = () => {
         <table className={styles.studyTable}>
           <thead>
             <tr>
-              {/*<th>ID</th>*/}
               <th>Nome do Estudo</th>
               <th>Observações</th>
               <th>Classificações Mínimas</th>
+              <th>Classificações Máximas</th>
               <th>Percentagem Validação (%)</th>
               <th>Estado</th>
               <th>Ações</th>
@@ -280,10 +285,10 @@ const StudiesManagementPage = () => {
           <tbody>
             {currentStudies.map((study) => (
               <tr key={study.id}>
-                {/*<td>{study.id}</td>*/}
                 <td>{study.name}</td>
                 <td>{study.obs}</td>
                 <td>{study.minClassificationsPerPost}</td>
+                <td>{study.maxClassificationsPerUser}</td>
                 <td>{Number(study.validationAgreementPercent).toFixed(2)}</td>
                 <td>
                   {isActive(study.finishedAt) ? (
@@ -380,6 +385,19 @@ const StudiesManagementPage = () => {
                   required
                 />
 
+                <label>Máximo de classificações por utilizador</label>
+                <input
+                  type="number"
+                  min="1"
+                  step="1"
+                  placeholder="Máximo de classificações (ex: 10)"
+                  value={form.maxClassificationsPerUser}
+                  onChange={(e) =>
+                    setForm({ ...form, maxClassificationsPerUser: e.target.value })
+                  }
+                  required
+                />
+
                 <label>Percentagem de validação (%)</label>
                 <input
                   type="number"
@@ -439,6 +457,18 @@ const StudiesManagementPage = () => {
                   value={form.minClassificationsPerPost}
                   onChange={(e) =>
                     setForm({ ...form, minClassificationsPerPost: e.target.value })
+                  }
+                />
+
+                <label>Máximo de classificações por utilizador</label>
+                <input
+                  type="number"
+                  min="1"
+                  step="1"
+                  placeholder="Máximo de classificações (ex: 10)"
+                  value={form.maxClassificationsPerUser}
+                  onChange={(e) =>
+                    setForm({ ...form, maxClassificationsPerUser: e.target.value })
                   }
                 />
 

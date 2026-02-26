@@ -211,38 +211,52 @@ const StudiesManagementPage = () => {
     setShowEditModal(true);
   };
 
-  const handleEditStudy = () => {
-    const minCls = Number(form.minClassificationsPerPost);
-    const maxClsUser = Number(form.maxClassificationsPerUser);
-    const agree = Number(form.validationAgreementPercent);
+  // --------- Edit ---------
+    const handleEditStudy = () => {
+      const { name, minClassificationsPerPost, maxClassificationsPerUser, validationAgreementPercent } = form;
 
-    if (form.minClassificationsPerPost !== '' && (!Number.isFinite(minCls) || minCls <= 0)) {
-       return setTimedError(setEditError, editErrTimer, 'O mínimo de classificações por post deve ser um número positivo.');
-    }
-    if (form.maxClassificationsPerUser !== '' && (!Number.isFinite(maxClsUser) || maxClsUser <= 0)) {
-       return setTimedError(setEditError, editErrTimer, 'O máximo de classificações por utilizador deve ser um número positivo.');
-    }
-    if (!Number.isFinite(agree) || agree < 0 || agree > 100) {
-      return setTimedError(setEditError, editErrTimer, 'A percentagem de validação deve estar entre 0 e 100.');
-    }
+      // Garantir que os campos obrigatórios não estão vazios na Edição
+      if (
+        !name.trim() ||
+        minClassificationsPerPost === '' ||
+        maxClassificationsPerUser === '' ||
+        validationAgreementPercent === ''
+      ) {
+        return setTimedError(setEditError, editErrTimer, 'Os campos Nome, Mínimo, Máximo e Percentagem são obrigatórios.');
+      }
 
-    api
-      .put(`/studies/${editStudyData.id}`, {
-        ...form,
-        updatedBy: localStorage.getItem('username')
-      })
-      .then(() => {
-        fetchStudies();
-        closeEditModal();
-      })
-      .catch((err) => {
-        if (err.response?.status === 409) {
-          setTimedError(setEditError, editErrTimer, 'Já existe outro estudo com esse nome.');
-        } else {
-          setTimedError(setEditError, editErrTimer, 'Erro ao atualizar estudo.');
-        }
-      });
-  };
+      const minCls = Number(minClassificationsPerPost);
+      const maxClsUser = Number(maxClassificationsPerUser);
+      const agree = Number(validationAgreementPercent);
+
+      //Validações matemáticas
+      if (!Number.isFinite(minCls) || minCls <= 0) {
+        return setTimedError(setEditError, editErrTimer, 'O mínimo de classificações por post deve ser um número positivo.');
+      }
+      if (!Number.isFinite(maxClsUser) || maxClsUser <= 0) {
+        return setTimedError(setEditError, editErrTimer, 'O máximo de classificações por utilizador deve ser um número positivo.');
+      }
+      if (!Number.isFinite(agree) || agree < 0 || agree > 100) {
+        return setTimedError(setEditError, editErrTimer, 'A percentagem de validação deve estar entre 0 e 100.');
+      }
+      // Envia para o Backend
+      api
+        .put(`/studies/${editStudyData.id}`, {
+          ...form,
+          updatedBy: localStorage.getItem('username')
+        })
+        .then(() => {
+          fetchStudies();
+          closeEditModal();
+        })
+        .catch((err) => {
+          if (err.response?.status === 409) {
+            setTimedError(setEditError, editErrTimer, 'Já existe outro estudo com esse nome.');
+          } else {
+            setTimedError(setEditError, editErrTimer, 'Erro ao atualizar estudo.');
+          }
+        });
+    };
 
   const closeEditModal = () => {
     setShowEditModal(false);

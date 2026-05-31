@@ -63,7 +63,7 @@ const MenuHamburguer = () => {
                 Users
               </MenuItem>
               <MenuItem icon={<FaUser size={18} />} onClick={() => navigate('/admin/profile')}>
-                Profile
+                Perfil
               </MenuItem>
             </>
           )}

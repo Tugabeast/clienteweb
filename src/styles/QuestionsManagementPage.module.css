@@ -1,6 +1,6 @@
 .pageContainer {
   width: 100%;
-  height: 100vh;
+  min-height: 100vh;
   padding: 40px;
   box-sizing: border-box;
   background-color: #f4f4f4;
@@ -9,8 +9,23 @@
   align-items: center;
 }
 
-h2 {
+.pageContainer h2 {
   margin-bottom: 20px;
+}
+
+.errorMessage {
+  color: #b22222;
+  font-size: 14px;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.infoMessage {
+  margin-top: 10px;
+  margin-bottom: 20px;
+  text-align: center;
+  color: #555;
+  font-size: 15px;
 }
 
 .createBtn {
@@ -27,10 +42,27 @@ h2 {
   background-color: #0056b3;
 }
 
+.createBtn:disabled {
+  background-color: #8abcf5;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.createBtn:disabled:hover {
+  background-color: #8abcf5;
+}
+
+.tableWrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
 .questionTable {
   width: 100%;
   border-collapse: collapse;
   background-color: white;
+  border: 1px solid #ddd;
+  table-layout: fixed;
 }
 
 .questionTable th,
@@ -38,6 +70,7 @@ h2 {
   padding: 12px;
   border: 1px solid #ddd;
   text-align: left;
+  vertical-align: middle;
   max-width: 250px;
   word-wrap: break-word;
 }
@@ -48,6 +81,20 @@ h2 {
   font-weight: bold;
 }
 
+.questionTable tr:nth-child(even) td {
+  background-color: #f9f9f9;
+}
+
+.questionTable th:last-child,
+.questionTable td:last-child {
+  width: 150px;
+  white-space: nowrap;
+}
+
+.actionsCell {
+  align-items: center;
+  justify-content: flex-start;
+}
 
 .editBtn {
   background-color: #ffc107;
@@ -57,6 +104,7 @@ h2 {
   border-radius: 4px;
   cursor: pointer;
   margin-right: 8px;
+  font-size: 0.9rem;
 }
 
 .editBtn:hover {
@@ -70,11 +118,14 @@ h2 {
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  font-size: 0.9rem;
 }
 
 .deleteBtn:hover {
   background-color: #b52a3c;
 }
+
+/* ---------- MODAL ---------- */
 
 .modalOverlay {
   position: fixed;
@@ -95,7 +146,7 @@ h2 {
   border-radius: 12px;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
   width: 100%;
-  max-width: 400px;
+  max-width: 420px;
   display: flex;
   flex-direction: column;
 }
@@ -105,19 +156,50 @@ h2 {
   text-align: center;
 }
 
-.modal input,
-.modal textarea,
-.modal select {
+.modalForm {
+  display: flex;
+  flex-direction: column;
+}
+
+.modalForm label {
+  font-weight: bold;
+  margin-bottom: 4px;
+  color: #333;
+}
+
+.modalForm input,
+.modalForm textarea,
+.modalForm select {
   padding: 10px;
   margin-bottom: 15px;
   border: 1px solid #ccc;
   border-radius: 6px;
+  font-size: 14px;
+  box-sizing: border-box;
+  background-color: white;
+}
+
+.modalForm input:focus,
+.modalForm textarea:focus,
+.modalForm select:focus {
+  outline: none;
+  border-color: #007bff;
+}
+
+.modalError {
+  background: #ffe9e9;
+  color: #b00020;
+  border: 1px solid #ffbdbd;
+  border-radius: 6px;
+  padding: 8px 12px;
+  margin-bottom: 12px;
   font-size: 14px;
 }
 
 .modalActions {
   display: flex;
   justify-content: space-between;
+  gap: 12px;
 }
 
 .confirmBtn {
@@ -146,6 +228,22 @@ h2 {
   background-color: #5a6268;
 }
 
+.confirmBtn:disabled,
+.cancelBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.confirmBtn:disabled:hover {
+  background-color: #28a745;
+}
+
+.cancelBtn:disabled:hover {
+  background-color: #6c757d;
+}
+
+/* ---------- PAGINAÇÃO ---------- */
+
 .pagination {
   display: flex;
   justify-content: center;
@@ -172,26 +270,30 @@ h2 {
   border-color: #007bff;
 }
 
+/* ---------- RESPONSIVO ---------- */
 
-/* === bloco novo === */
-.modalForm {
-  display: flex;
-  flex-direction: column;
+@media (max-width: 768px) {
+  .pageContainer {
+    padding: 24px 16px;
+  }
+
+  .modal {
+    max-width: 90%;
+    padding: 28px;
+  }
+
+  .modalActions {
+    flex-direction: column;
+  }
+
+  .confirmBtn,
+  .cancelBtn {
+    width: 100%;
+  }
+
+  .questionTable th,
+  .questionTable td {
+    padding: 10px;
+    font-size: 0.9rem;
+  }
 }
-
-.modalForm label {
-  font-weight: bold;
-  margin-bottom: 4px;     /* espaço entre o label e o campo */
-  color: #333;
-}
-
-.modalError {
-  background: #ffe9e9;
-  color: #b00020;
-  border: 1px solid #ffbdbd;
-  border-radius: 6px;
-  padding: 8px 12px;
-  margin-bottom: 12px;
-  font-size: 14px;
-}
-

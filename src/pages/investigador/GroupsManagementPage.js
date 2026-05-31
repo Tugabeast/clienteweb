@@ -34,8 +34,16 @@ const GroupsManagementPage = () => {
 
   const fetchStudies = () => {
     api.get(`/studies?username=${username}`)
-      .then(res => setStudies(res.data))
-      .catch(err => console.error('Erro ao buscar estudos:', err));
+      .then(res => setStudies(Array.isArray(res.data) ? res.data : []))
+      .catch(err => {
+        if (err.response?.status === 404) {
+          setStudies([]);
+          return;
+        }
+
+        console.error('Erro ao buscar estudos:', err);
+        setStudies([]);
+      });
   };
 
   const fetchAllAssociations = async () => {
@@ -43,21 +51,38 @@ const GroupsManagementPage = () => {
       const userList = await api.get('/users');
       const allAssociations = [];
 
-      for (const user of userList.data) {
-        const response = await api.get(`/users/${user.id}/studies`);
-        response.data.forEach(study => {
-          allAssociations.push({
-            userId: user.id,
-            username: user.username,
-            studyId: study.id,
-            studyName: study.name
+      const normalUsers = Array.isArray(userList.data)
+        ? userList.data.filter(user => user.type === 'user')
+        : [];
+
+      for (const user of normalUsers) {
+        try {
+          const response = await api.get(`/users/${user.id}/studies`);
+
+          const userStudies = Array.isArray(response.data) ? response.data : [];
+
+          userStudies.forEach(study => {
+            allAssociations.push({
+              userId: user.id,
+              username: user.username,
+              studyId: study.id,
+              studyName: study.name
+            });
           });
-        });
+        } catch (err) {
+          if (err.response?.status === 404) {
+            continue;
+          }
+
+          throw err;
+        }
       }
 
       setAssociations(allAssociations);
+      setCurrentPage(1);
     } catch (error) {
       console.error('Erro ao buscar associações:', error);
+      setAssociations([]);
     }
   };
 

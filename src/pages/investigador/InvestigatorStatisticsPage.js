@@ -17,44 +17,78 @@ ChartJS.register(Tooltip, Legend, BarElement, CategoryScale, LinearScale);
 const InvestigatorStatisticsPage = () => {
   const [generalStats, setGeneralStats] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [statsError, setStatsError] = useState('');
+  const [statsInfo, setStatsInfo] = useState('');
+
   const scrollRef = useRef(null);
 
   useEffect(() => {
-    api.get('/stats/general')
-      .then(res => setGeneralStats(res.data))
-      .catch(err => console.error('Erro ao buscar estatísticas gerais:', err));
+    fetchGeneralStats();
   }, []);
 
-  
-  // Só faz a procura se o searchTerm não estiver vazio.
-  // Caso contrário, define como -1 (nenhum selecionado).
-  const searchedIndex = searchTerm.trim() !== '' 
-    ? generalStats.findIndex(item => item.anonymizedUser.toLowerCase().includes(searchTerm.toLowerCase()))
-    : -1;
+  const fetchGeneralStats = async () => {
+    try {
+      setIsLoading(true);
+      setStatsError('');
+      setStatsInfo('');
+      setGeneralStats([]);
+
+      const res = await api.get('/stats/general');
+
+      const data = Array.isArray(res.data) ? res.data : [];
+
+      if (data.length === 0) {
+        setGeneralStats([]);
+        setStatsInfo('Ainda não existem estatísticas para os seus estudos.');
+        return;
+      }
+
+      setGeneralStats(data);
+    } catch (err) {
+      setGeneralStats([]);
+
+      if (err.response?.status === 404) {
+        setStatsError('');
+        setStatsInfo('Ainda não existem estatísticas para os seus estudos.');
+        return;
+      }
+
+      setStatsInfo('');
+      setStatsError('Erro ao carregar estatísticas.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const searchedIndex =
+    searchTerm.trim() !== ''
+      ? generalStats.findIndex((item) =>
+          item.anonymizedUser.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+      : -1;
 
   useEffect(() => {
-    if (scrollRef.current && searchedIndex >= 0 && searchTerm !== '') {
-      // 100 é a largura estimada da barra + margem
+    if (scrollRef.current && searchedIndex >= 0 && searchTerm.trim() !== '') {
       const scrollTo = searchedIndex * 100 - scrollRef.current.clientWidth / 2 + 50;
       scrollRef.current.scrollTo({ left: scrollTo, behavior: 'smooth' });
     }
   }, [searchedIndex, searchTerm]);
 
-  // --- DADOS DO GRÁFICO ---
   const barData = {
-    labels: generalStats.map(item => item.anonymizedUser),
+    labels: generalStats.map((item) => item.anonymizedUser),
     datasets: [
       {
         label: 'Validadas',
-        data: generalStats.map(item => item.validated),
-        // Mantém a lógica de destacar a cor se for o utilizador pesquisado
+        data: generalStats.map((item) => Number(item.validated) || 0),
         backgroundColor: generalStats.map((_, index) =>
           index === searchedIndex ? '#0056b3' : '#36A2EB'
         ),
       },
       {
         label: 'Por validar',
-        data: generalStats.map(item => item.not_validated),
+        data: generalStats.map((item) => Number(item.not_validated) || 0),
         backgroundColor: generalStats.map((_, index) =>
           index === searchedIndex ? '#b3004b' : '#FF6384'
         ),
@@ -63,7 +97,7 @@ const InvestigatorStatisticsPage = () => {
   };
 
   const chartOptions = {
-    indexAxis: 'x', // Barras verticais
+    indexAxis: 'x',
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
@@ -75,7 +109,6 @@ const InvestigatorStatisticsPage = () => {
           padding: 15,
         },
       },
-      // Tooltip unificado para mostrar ambos os valores ao passar o rato
       tooltip: {
         mode: 'index',
         intersect: false,
@@ -83,7 +116,7 @@ const InvestigatorStatisticsPage = () => {
     },
     scales: {
       x: {
-        stacked: true, 
+        stacked: true,
         ticks: {
           autoSkip: false,
           maxRotation: 45,
@@ -92,12 +125,12 @@ const InvestigatorStatisticsPage = () => {
         },
       },
       y: {
-        stacked: true, 
+        stacked: true,
         beginAtZero: true,
         title: {
-            display: true,
-            text: 'Nº de Classificações'
-        }
+          display: true,
+          text: 'Nº de Classificações',
+        },
       },
     },
   };
@@ -105,34 +138,56 @@ const InvestigatorStatisticsPage = () => {
   return (
     <div className={styles.container}>
       <MenuHamburguer />
+
       <div className={styles.content}>
         <h1>Estatísticas de Classificação</h1>
 
-        <div className={styles.controls}>
-          <label htmlFor="search">
-            <span role="img" aria-label="search">🔍</span> Pesquisar por nome:
-          </label>
-          <input
-            id="search"
-            type="text"
-            placeholder="Pesquisar por nome do utilizador"
-            value={searchTerm}
-            onChange={e => setSearchTerm(e.target.value)}
-          />
-        </div>
+        {statsError && <p className={styles.errorMessage}>{statsError}</p>}
 
-        <div className={styles.chartContainer}>
-          <h2 style={{ textAlign: 'center' }}>Classificações Gerais</h2>
-          <div className={styles.chartScrollWrapper} ref={scrollRef}>
-            <div
-              className={styles.barChart}
-              // Largura dinâmica para permitir scroll horizontal se houver muitos users
-              style={{ minWidth: `${Math.max(generalStats.length, 7) * 100}px` }}
-            >
-              <Bar data={barData} options={chartOptions} />
+        {!statsError && isLoading && (
+          <p className={styles.infoMessage}>A carregar estatísticas...</p>
+        )}
+
+        {!statsError && !isLoading && statsInfo && (
+          <p className={styles.infoMessage}>{statsInfo}</p>
+        )}
+
+        {!isLoading && !statsError && generalStats.length > 0 && (
+          <>
+            <div className={styles.controls}>
+              <label htmlFor="search">
+                <span role="img" aria-label="search">🔍</span> Pesquisar por nome:
+              </label>
+
+              <input
+                id="search"
+                type="text"
+                placeholder="Pesquisar por nome do utilizador"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
             </div>
-          </div>
-        </div>
+
+            {searchTerm.trim() !== '' && searchedIndex === -1 && (
+              <p className={styles.infoMessage}>
+                Nenhum utilizador encontrado com esse nome.
+              </p>
+            )}
+
+            <div className={styles.chartContainer}>
+              <h2 style={{ textAlign: 'center' }}>Classificações Gerais</h2>
+
+              <div className={styles.chartScrollWrapper} ref={scrollRef}>
+                <div
+                  className={styles.barChart}
+                  style={{ minWidth: `${Math.max(generalStats.length, 7) * 100}px` }}
+                >
+                  <Bar data={barData} options={chartOptions} />
+                </div>
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
 .pageContainer {
   width: 100%;
-  height: 100vh;
+  min-height: 100vh;
   padding: 40px;
   box-sizing: border-box;
   background-color: #f4f4f4;
@@ -13,6 +13,14 @@
   color: #b22222;
   font-size: 14px;
   margin-bottom: 10px;
+}
+
+.infoMessage {
+  margin-top: 10px;
+  margin-bottom: 20px;
+  text-align: center;
+  color: #555;
+  font-size: 15px;
 }
 
 h2 {
@@ -31,6 +39,11 @@ h2 {
 
 .createBtn:hover {
   background-color: #0056b3;
+}
+
+.tableWrapper {
+  width: 100%;
+  overflow-x: auto;
 }
 
 .studyTable {
@@ -122,6 +135,7 @@ h2 {
 }
 
 /* ---------- MODAL ---------- */
+
 .modalOverlay {
   position: fixed;
   top: 0;
@@ -151,7 +165,6 @@ h2 {
   text-align: center;
 }
 
-/* Erro mostrado DENTRO do modal */
 .modalError {
   background: #fdecea;
   border: 1px solid #f5c6cb;
@@ -186,6 +199,7 @@ h2 {
 .modalActions {
   display: flex;
   justify-content: space-between;
+  gap: 12px;
 }
 
 .confirmBtn {
@@ -216,7 +230,22 @@ h2 {
   background-color: #5a6268;
 }
 
+.confirmBtn:disabled,
+.cancelBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.confirmBtn:disabled:hover {
+  background-color: #28a745;
+}
+
+.cancelBtn:disabled:hover {
+  background-color: #6c757d;
+}
+
 /* ---------- PAGINAÇÃO ---------- */
+
 .pagination {
   display: flex;
   justify-content: center;

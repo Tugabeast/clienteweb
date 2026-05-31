@@ -1,6 +1,6 @@
 .pageContainer {
   width: 100%;
-  height: 100vh;
+  min-height: 100vh;
   padding: 40px;
   box-sizing: border-box;
   background-color: #f4f4f4;
@@ -9,14 +9,29 @@
   align-items: center;
 }
 
-h2 {
+.pageContainer h2 {
   margin-bottom: 20px;
 }
 
+.errorMessage {
+  color: #b22222;
+  font-size: 14px;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.infoMessage {
+  margin-top: 10px;
+  margin-bottom: 20px;
+  text-align: center;
+  color: #555;
+  font-size: 15px;
+}
+
 .createBtn {
+  padding: 10px 20px;
   background-color: #007bff;
   color: white;
-  padding: 10px 20px;
   border: none;
   border-radius: 6px;
   cursor: pointer;
@@ -25,6 +40,21 @@ h2 {
 
 .createBtn:hover {
   background-color: #0056b3;
+}
+
+.createBtn:disabled {
+  background-color: #8abcf5;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.createBtn:disabled:hover {
+  background-color: #8abcf5;
+}
+
+.tableWrapper {
+  width: 100%;
+  overflow-x: auto;
 }
 
 .categoryTable {
@@ -61,6 +91,11 @@ h2 {
   white-space: nowrap;
 }
 
+.actionsCell {
+  align-items: center;
+  justify-content: flex-start;
+}
+
 .editBtn {
   background-color: #ffc107;
   color: black;
@@ -90,12 +125,7 @@ h2 {
   background-color: #b52a3c;
 }
 
-.actionsCell {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 10px;
-}
+/* ---------- MODAL ---------- */
 
 .modalOverlay {
   position: fixed;
@@ -116,53 +146,73 @@ h2 {
   border-radius: 12px;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
   width: 100%;
-  max-width: 400px;
+  max-width: 420px;
   display: flex;
   flex-direction: column;
 }
 
 .modal h3 {
-  margin-bottom: 20px;
+  margin-bottom: 16px;
   text-align: center;
+}
+
+.modalError {
+  background: #fdecea;
+  border: 1px solid #f5c6cb;
+  color: #8a1c20;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 0.95rem;
+  margin-bottom: 12px;
 }
 
 .modalForm {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  margin-top: 8px;
 }
 
 .modalForm input,
-.modalForm select,
-.modalForm textarea {
+.modalForm textarea,
+.modalForm select {
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 6px;
   width: 100%;
   font-size: 14px;
   box-sizing: border-box;
-  margin: 0;
+  background-color: white;
 }
 
-/* Mensagem de erro dentro do modal */
-.modalError {
-  background: #ffe9e9;
-  color: #b00020;
-  border: 1px solid #ffbdbd;
-  border-radius: 6px;
-  padding: 8px 12px;
-  margin-bottom: 12px;
-  font-size: 14px;
+.modalForm input:focus,
+.modalForm textarea:focus,
+.modalForm select:focus {
+  outline: none;
+  border-color: #007bff;
 }
 
 .modalForm label {
   font-weight: bold;
-  color: #333;
+}
+
+.previewText {
+  color: #666;
+  font-size: 13px;
+  margin-top: -4px;
+}
+
+.previewText code {
+  background-color: #f1f1f1;
+  padding: 2px 5px;
+  border-radius: 4px;
 }
 
 .modalActions {
   display: flex;
   justify-content: space-between;
+  gap: 12px;
+  margin-top: 10px;
 }
 
 .confirmBtn {
@@ -193,15 +243,30 @@ h2 {
   background-color: #5a6268;
 }
 
-.errorMessage {
-  color: red;
-  font-size: 14px;
-  margin-bottom: 10px;
+.confirmBtn:disabled,
+.cancelBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
+.confirmBtn:disabled:hover {
+  background-color: #28a745;
+}
+
+.cancelBtn:disabled:hover {
+  background-color: #6c757d;
+}
+
+/* ---------- PAGINAÇÃO ---------- */
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+  gap: 8px;
+}
 
 .pagination button {
-  margin-top: 10px;
   padding: 6px 12px;
   border: 1px solid #ccc;
   background-color: #f5f5f5;
@@ -218,4 +283,32 @@ h2 {
   background-color: #007bff;
   color: white;
   border-color: #007bff;
+}
+
+/* ---------- RESPONSIVO ---------- */
+
+@media (max-width: 768px) {
+  .pageContainer {
+    padding: 24px 16px;
+  }
+
+  .modal {
+    max-width: 90%;
+    padding: 28px;
+  }
+
+  .modalActions {
+    flex-direction: column;
+  }
+
+  .confirmBtn,
+  .cancelBtn {
+    width: 100%;
+  }
+
+  .categoryTable th,
+  .categoryTable td {
+    padding: 10px;
+    font-size: 0.9rem;
+  }
 }
